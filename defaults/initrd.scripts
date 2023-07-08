@@ -3100,3 +3100,51 @@ checkfs() {
 
 	return 1
 }
+
+opal_unlock()
+{
+	local retry;
+	retry=0;
+	while true ; do
+		# Read password
+		/bin/stty -echo
+		echo -n "SED Password for $1: "
+		read pass
+		/bin/stty echo
+		echo
+
+		# If empty, then just don't do anything
+		if [ "$pass" == "" ] ; then
+			good_msg "No unlock attempted"
+			break
+		fi
+
+		# Attempt unlock
+		/usr/sbin/sedutil-cli --setlockingrange 1 rw "$pass" "$1"
+
+		# Failed ?
+		if [ $? != 0 ] ; then
+			# If exhausted retry, drop to shell
+			if [ $retry == 3 ] ; then
+				bad_msg "Failed to unlock !"
+				run_emergency_shell
+				break;
+			fi;
+
+			# Retry
+			warn_msg "Failed to unlock ! Retry."
+			retry=$(($retry+1))
+			continue
+		fi
+
+		# We know pass is good, so prepare for S3
+		#"$SEDUTIL" --prepareForS3Sleep 1 "$pass" "$1"
+		#if [ $? != 0 ] ; then
+		#	panic "prepare for S3 failed for $1"
+		#fi
+
+		# Done
+		good_msg "Unlocked!"
+		break
+	done
+}

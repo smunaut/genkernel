@@ -553,7 +553,7 @@ append_busybox() {
 	done
 
 	# Set up a few default symlinks
-	local required_applets='[ ash sh mkdir mknod mount uname echo chmod cut cat touch'
+	local required_applets='[ ash sh mkdir mknod mount uname echo chmod cut cat touch stty awk partprobe'
 	local required_applet=
 	for required_applet in ${required_applets}
 	do

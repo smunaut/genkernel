@@ -680,6 +680,10 @@ fi
 
 keyctl_keyadd
 
+# Decrypt NVME
+opal_unlock /dev/nvme0
+/bin/partprobe /dev/nvme0n1
+
 # Initialize LUKS root device except for livecd's
 if [ "${CDROOT}" != '1' ]
 then
